@@ -5,3 +5,4 @@ seaborn==0.12.2
 scikit-learn==1.2.2
 hdbscan==0.8.33
 tqdm==4.65.0
+streamlit
