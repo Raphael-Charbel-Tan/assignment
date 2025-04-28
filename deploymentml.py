@@ -788,61 +788,6 @@ def show_model_performance(pca, gmm):
                     fig = plot_silhouette_scores(X_pca)
                     st.plotly_chart(fig, use_container_width=True)
                     
-                    # BIC Analysis
-                    st.subheader("Bayesian Information Criterion (BIC)")
-                    
-                    n_components_range = range(2, 11)
-                    bic_values = []
-                    
-                    for n_components in n_components_range:
-                        # Create GMM with different number of components
-                        gmm_test = GaussianMixture(
-                            n_components=n_components, 
-                            covariance_type=gmm.covariance_type,
-                            random_state=42
-                        )
-                        gmm_test.fit(X_pca)
-                        bic_values.append(gmm_test.bic(X_pca))
-                    
-                    # Plot BIC values
-                    fig = go.Figure()
-                    fig.add_trace(go.Scatter(
-                        x=list(n_components_range),
-                        y=bic_values,
-                        mode='lines+markers',
-                        name='BIC',
-                        marker=dict(size=10, color='royalblue'),
-                        line=dict(width=2, color='royalblue')
-                    ))
-                    
-                    # Mark the minimum BIC
-                    min_idx = np.argmin(bic_values)
-                    min_components = list(n_components_range)[min_idx]
-                    min_bic = bic_values[min_idx]
-                    
-                    fig.add_shape(type="line",
-                        x0=min_components, y0=min(bic_values), x1=min_components, y1=max(bic_values),
-                        line=dict(color="red", width=2, dash="dash")
-                    )
-                    
-                    fig.add_annotation(
-                        x=min_components,
-                        y=min_bic,
-                        text=f"Best: {min_components} clusters",
-                        showarrow=True,
-                        arrowhead=1
-                    )
-                    
-                    fig.update_layout(
-                        title="BIC for Different Numbers of Clusters",
-                        xaxis_title="Number of Clusters",
-                        yaxis_title="BIC Value (lower is better)",
-                        height=500,
-                        template="plotly_white"
-                    )
-                    
-                    st.plotly_chart(fig, use_container_width=True)
-                    
                     # Current model evaluation
                     st.subheader("Current Model Evaluation")
                     
@@ -851,9 +796,7 @@ def show_model_performance(pca, gmm):
                     
                     # Calculate silhouette score for current model
                     silhouette_avg = silhouette_score(X_pca, cluster_labels)
-                    
-                    # Calculate BIC for current model
-                    bic = gmm.bic(X_pca)
+                
                     
                     # Display metrics
                     col1, col2 = st.columns(2)
@@ -867,14 +810,6 @@ def show_model_performance(pca, gmm):
                         - Negative values indicate incorrectly assigned samples
                         """)
                     
-                    with col2:
-                        st.metric("BIC Value", f"{bic:.2f}")
-                        st.markdown("""
-                        **Bayesian Information Criterion (BIC)** is a model selection criterion:
-                        - Lower values indicate better models
-                        - It penalizes model complexity (number of clusters)
-                        - Used to find optimal number of clusters
-                        """)
                     
                     # Cluster quality visualization
                     st.subheader("Cluster Quality Visualization")
